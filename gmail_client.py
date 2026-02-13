@@ -43,7 +43,7 @@ def _decode_header_value(value: str) -> str:
 
 
 def _extract_body(mime_msg: Message) -> str:
-    """Walk MIME parts and extract plain text body, similar to gmail-wrapper's simpleParser."""
+
     if mime_msg.is_multipart():
         for part in mime_msg.walk():
             if part.get_content_type() == "text/plain":
@@ -59,8 +59,7 @@ def _extract_body(mime_msg: Message) -> str:
     return ""
 
 
-def fetch_unread_emails(service, max_results: int = 50) -> list[dict]:
-    """Fetch unread emails using the same raw-format approach as gmail-wrapper."""
+def fetch_unread_emails(service, max_results: int = 20) -> list[dict]:
     twelve_hours_ago = int(time.time()) - (12 * 60 * 60)
     response = (
         service.users()

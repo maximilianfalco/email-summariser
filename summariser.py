@@ -1,6 +1,9 @@
 import os
+from datetime import datetime, timezone
 
 from openai import OpenAI
+
+from prompts import SUMMARISE_SYSTEM
 
 
 def ping_ai() -> str:
@@ -16,7 +19,8 @@ def ping_ai() -> str:
 def summarise_emails(emails: list[dict]) -> str:
     client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
-    email_text = ""
+    today = datetime.now(timezone.utc).strftime("%b %d, %Y")
+    email_text = f"Today's date: {today}\n\n"
     for i, e in enumerate(emails, 1):
         email_text += (
             f"--- Email {i} ---\n"
@@ -28,17 +32,11 @@ def summarise_emails(emails: list[dict]) -> str:
 
     response = client.chat.completions.create(
         model="gpt-4.1-mini",
-        max_tokens=1024,
+        max_tokens=2048,
         messages=[
             {
                 "role": "system",
-                "content": (
-                    "You are an email assistant. Summarise the following unread emails "
-                    "into a concise daily briefing. Group related emails together. "
-                    "For each email, include: who it's from, the subject, "
-                    "and a 1-2 sentence summary. "
-                    "End with any action items if applicable."
-                ),
+                "content": SUMMARISE_SYSTEM,
             },
             {
                 "role": "user",

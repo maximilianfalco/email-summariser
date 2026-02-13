@@ -72,10 +72,12 @@ export default function Dashboard() {
   const [emails, setEmails] = useState<Email[]>([]);
   const [summary, setSummary] = useState("");
   const [slackStatus, setSlackStatus] = useState("");
+  const [pingStatus, setPingStatus] = useState("");
   const [loading, setLoading] = useState({
     emails: false,
     summary: false,
     slack: false,
+    ping: false,
   });
   const [error, setError] = useState("");
 
@@ -146,11 +148,31 @@ export default function Dashboard() {
     }
   }
 
+  async function pingSlack() {
+    setLoading((l) => ({ ...l, ping: true }));
+    setError("");
+    try {
+      if (mockMode) {
+        await sleep(400);
+        setPingStatus("Sent! (mock)");
+      } else {
+        const res = await fetch(`${API}/api/ping-slack`, { method: "POST" });
+        if (!res.ok) throw new Error((await res.json()).detail);
+        setPingStatus("Sent!");
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to ping Slack");
+    } finally {
+      setLoading((l) => ({ ...l, ping: false }));
+    }
+  }
+
   function toggleMockMode() {
     setMockMode((m) => !m);
     setEmails([]);
     setSummary("");
     setSlackStatus("");
+    setPingStatus("");
     setError("");
   }
 
@@ -255,6 +277,22 @@ export default function Dashboard() {
           </button>
           {slackStatus && (
             <span className="text-sm text-green-400">{slackStatus}</span>
+          )}
+        </div>
+      </section>
+
+      <section className="mb-8">
+        <div className="flex items-center gap-4 mb-4">
+          <h2 className="text-lg font-semibold">Ping Slack</h2>
+          <button
+            onClick={pingSlack}
+            disabled={loading.ping}
+            className="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 disabled:opacity-50 text-sm"
+          >
+            {loading.ping ? "Pinging..." : "Ping"}
+          </button>
+          {pingStatus && (
+            <span className="text-sm text-green-400">{pingStatus}</span>
           )}
         </div>
       </section>

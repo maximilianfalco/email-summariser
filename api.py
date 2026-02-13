@@ -63,3 +63,12 @@ def slack(req: SlackRequest):
         return {"status": "sent"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
+
+
+@app.post("/api/ping-slack")
+def ping_slack():
+    try:
+        send_to_slack("hello")
+        return {"status": "sent"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e

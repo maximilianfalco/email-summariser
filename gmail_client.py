@@ -1,5 +1,6 @@
 import base64
 import os
+import time
 from email import message_from_bytes
 from email.header import decode_header
 from email.message import Message
@@ -60,12 +61,14 @@ def _extract_body(mime_msg: Message) -> str:
 
 def fetch_unread_emails(service, max_results: int = 50) -> list[dict]:
     """Fetch unread emails using the same raw-format approach as gmail-wrapper."""
+    twelve_hours_ago = int(time.time()) - (12 * 60 * 60)
     response = (
         service.users()
         .messages()
         .list(
             userId="me",
             labelIds=["UNREAD", "INBOX"],
+            q=f"category:primary after:{twelve_hours_ago}",
             maxResults=max_results,
         )
         .execute()

@@ -2,13 +2,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from fastapi import FastAPI, HTTPException  # noqa: E402
-from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
-from pydantic import BaseModel  # noqa: E402
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
-from gmail_client import fetch_unread_emails, get_gmail_service  # noqa: E402
-from slack_notifier import send_to_slack  # noqa: E402
-from summariser import summarise_emails  # noqa: E402
+from gmail_client import fetch_unread_emails, get_gmail_service
+from slack_notifier import send_to_slack
+from summariser import summarise_emails
 
 app = FastAPI(title="Email Summariser API")
 
@@ -40,7 +40,7 @@ def get_emails():
         emails = fetch_unread_emails(service)
         return {"emails": emails, "count": len(emails)}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @app.post("/api/summarise")
@@ -51,7 +51,7 @@ def summarise(req: SummariseRequest):
         summary = summarise_emails(req.emails)
         return {"summary": summary}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @app.post("/api/send-slack")
@@ -62,4 +62,4 @@ def slack(req: SlackRequest):
         send_to_slack(f"*Daily Email Summary*\n\n{req.summary}")
         return {"status": "sent"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e

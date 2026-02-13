@@ -25,7 +25,8 @@ def summarise_emails(emails: list[dict]) -> str:
                 "content": (
                     "You are an email assistant. Summarise the following unread emails "
                     "into a concise daily briefing. Group related emails together. "
-                    "For each email, include: who it's from, the subject, and a 1-2 sentence summary. "
+                    "For each email, include: who it's from, the subject, "
+                    "and a 1-2 sentence summary. "
                     "End with any action items if applicable."
                 ),
             },

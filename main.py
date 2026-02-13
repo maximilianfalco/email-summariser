@@ -4,9 +4,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from gmail_client import fetch_unread_emails, get_gmail_service  # noqa: E402
-from slack_notifier import send_to_slack  # noqa: E402
-from summariser import summarise_emails  # noqa: E402
+from gmail_client import fetch_unread_emails, get_gmail_service
+from slack_notifier import send_to_slack
+from summariser import summarise_emails
 
 
 def main():

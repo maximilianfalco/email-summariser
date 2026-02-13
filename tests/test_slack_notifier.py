@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock, patch
 
+import pytest
 import requests
 
 from slack_notifier import send_to_slack
@@ -28,8 +29,5 @@ def test_send_to_slack_raises_on_error(mock_post):
     mock_response.raise_for_status.side_effect = requests.HTTPError("500 Server Error")
     mock_post.return_value = mock_response
 
-    try:
+    with pytest.raises(requests.HTTPError):
         send_to_slack("Hello Slack")
-        assert False, "Expected HTTPError"
-    except requests.HTTPError:
-        pass

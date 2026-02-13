@@ -4,4 +4,6 @@ google-auth-oauthlib
 openai
 requests
 python-dotenv
+fastapi
+uvicorn
 pytest

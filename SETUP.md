@@ -5,6 +5,7 @@ Complete walkthrough to get the email summariser running on your machine.
 ## Prerequisites
 
 - Python 3.11+ ([download](https://www.python.org/downloads/))
+- Node.js 22+ ([download](https://nodejs.org/)) — for the debug frontend
 - A Google account with Gmail
 - An OpenAI account
 - A Slack workspace you can add apps to
@@ -17,13 +18,24 @@ git clone https://github.com/maximilianfalco/email-summariser.git
 cd email-summariser
 ```
 
-## 2. Create a virtual environment
+## 2. Install dependencies
 
 ```bash
+make install
+```
+
+Or manually:
+
+```bash
+# Python
 python3 -m venv venv
 source venv/bin/activate   # macOS/Linux
 # or: venv\Scripts\activate  # Windows
 pip install -r requirements.txt
+
+# Frontend
+cd frontend
+npm install
 ```
 
 ## 3. Set up Gmail API credentials
@@ -118,7 +130,32 @@ Sending summary to Slack...
 Done.
 ```
 
-## 8. Run tests
+## 8. Debug frontend (optional)
+
+A Next.js dashboard to inspect each step of the pipeline individually.
+
+```bash
+make dev
+```
+
+This starts both the FastAPI server (`:8000`) and the frontend (`:4782`). Open `http://localhost:4782`.
+
+You can also run them separately:
+
+```bash
+make api       # just the API server
+make frontend  # just the frontend
+```
+
+The API docs are available at `http://localhost:8000/docs`.
+
+## 9. Run tests
+
+```bash
+make test
+```
+
+Or directly:
 
 ```bash
 pytest -v
@@ -126,7 +163,7 @@ pytest -v
 
 All 14 tests should pass. They use mocks so no API keys are needed.
 
-## 9. Set up the cron job (optional)
+## 10. Set up the cron job (optional)
 
 To run automatically every day at 9:00 AM local time:
 

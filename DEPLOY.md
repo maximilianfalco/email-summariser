@@ -1,6 +1,6 @@
 # Deployment Guide
 
-Options for running the email summariser on a server so it runs unattended.
+Options for deploying the email summariser API so it runs unattended. The debug frontend is for local development only and is not included in deployment.
 
 ## Important: OAuth token handling
 
@@ -243,8 +243,11 @@ cronSchedule = "0 9 * * *"
 
 | File | Required | Notes |
 |---|---|---|
-| `*.py` | Yes | All Python source files |
+| `*.py` (except `api.py`) | Yes | Core Python source files |
 | `requirements.txt` | Yes | Dependencies |
 | `.env` | Yes | Environment variables (or set via platform UI) |
 | `token.json` | Yes | Gmail OAuth token (generate locally first) |
 | `credentials.json` | No | Only needed for initial OAuth flow, not for runtime |
+| `frontend/` | No | Debug UI, local development only |
+| `api.py` | No | Debug API server, local development only |
+| `Makefile` | No | Local dev convenience commands |

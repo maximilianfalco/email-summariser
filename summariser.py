@@ -3,6 +3,16 @@ import os
 from openai import OpenAI
 
 
+def ping_ai() -> str:
+    client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+    response = client.chat.completions.create(
+        model="gpt-4.1-mini",
+        max_tokens=50,
+        messages=[{"role": "user", "content": "Say hello in one sentence."}],
+    )
+    return response.choices[0].message.content or ""
+
+
 def summarise_emails(emails: list[dict]) -> str:
     client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 

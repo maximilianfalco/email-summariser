@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 from gmail_client import fetch_unread_emails, get_gmail_service
 from slack_notifier import send_to_slack
-from summariser import summarise_emails
+from summariser import ping_ai, summarise_emails
 
 app = FastAPI(title="Email Summariser API")
 
@@ -61,6 +61,15 @@ def slack(req: SlackRequest):
     try:
         send_to_slack(f"*Daily Email Summary*\n\n{req.summary}")
         return {"status": "sent"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e
+
+
+@app.post("/api/ping-ai")
+def ping_ai_endpoint():
+    try:
+        response = ping_ai()
+        return {"response": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 

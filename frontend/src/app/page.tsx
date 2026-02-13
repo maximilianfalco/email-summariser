@@ -73,11 +73,13 @@ export default function Dashboard() {
   const [summary, setSummary] = useState("");
   const [slackStatus, setSlackStatus] = useState("");
   const [pingStatus, setPingStatus] = useState("");
+  const [aiPingResponse, setAiPingResponse] = useState("");
   const [loading, setLoading] = useState({
     emails: false,
     summary: false,
     slack: false,
     ping: false,
+    aiPing: false,
   });
   const [error, setError] = useState("");
 
@@ -148,6 +150,27 @@ export default function Dashboard() {
     }
   }
 
+  async function pingAi() {
+    setLoading((l) => ({ ...l, aiPing: true }));
+    setError("");
+    setAiPingResponse("");
+    try {
+      if (mockMode) {
+        await sleep(800);
+        setAiPingResponse("Hello! How can I help you today?");
+      } else {
+        const res = await fetch(`${API}/api/ping-ai`, { method: "POST" });
+        if (!res.ok) throw new Error((await res.json()).detail);
+        const data = await res.json();
+        setAiPingResponse(data.response);
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to ping AI");
+    } finally {
+      setLoading((l) => ({ ...l, aiPing: false }));
+    }
+  }
+
   async function pingSlack() {
     setLoading((l) => ({ ...l, ping: true }));
     setError("");
@@ -173,6 +196,7 @@ export default function Dashboard() {
     setSummary("");
     setSlackStatus("");
     setPingStatus("");
+    setAiPingResponse("");
     setError("");
   }
 
@@ -279,6 +303,24 @@ export default function Dashboard() {
             <span className="text-sm text-green-400">{slackStatus}</span>
           )}
         </div>
+      </section>
+
+      <section className="mb-8">
+        <div className="flex items-center gap-4 mb-4">
+          <h2 className="text-lg font-semibold">Ping AI</h2>
+          <button
+            onClick={pingAi}
+            disabled={loading.aiPing}
+            className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 disabled:opacity-50 text-sm"
+          >
+            {loading.aiPing ? "Pinging..." : "Ping"}
+          </button>
+        </div>
+        {aiPingResponse && (
+          <pre className="whitespace-pre-wrap font-(family-name:--font-geist-mono) text-sm bg-gray-900 text-gray-200 border border-gray-700 p-4 rounded">
+            {aiPingResponse}
+          </pre>
+        )}
       </section>
 
       <section className="mb-8">

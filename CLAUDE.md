@@ -31,8 +31,8 @@ make install      # venv + pip + npm install
 
 ## Key patterns
 
-- Gmail emails are fetched with `format="raw"` then base64-decoded and parsed with Python's `email` module (inspired by the gmail-wrapper repo's approach with `simpleParser`)
-- OAuth token is stored in `token.json` (600 permissions), auto-refreshes on expiry
+- Gmail emails are fetched with `format="raw"` then base64-decoded and parsed with Python's `email` module
+- Gmail OAuth uses env vars (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN`) — no credential files needed
 - `load_dotenv()` runs before module imports in `main.py` and `api.py` (intentional E402 suppression)
 - Frontend has a mock mode toggle — fully offline with fake data, no backend needed
 
@@ -48,8 +48,9 @@ make install      # venv + pip + npm install
 - `OPENAI_API_KEY`
 - `SLACK_TOKEN` — Slack session token (`xoxc-...`)
 - `SLACK_COOKIE` — Slack session cookie (`xoxd-...`)
-- `credentials.json` — Google OAuth client (gitignored)
-- `token.json` — Google OAuth token (gitignored, 600 perms)
+- `GOOGLE_CLIENT_ID` — Google OAuth client ID
+- `GOOGLE_CLIENT_SECRET` — Google OAuth client secret
+- `GOOGLE_REFRESH_TOKEN` — Google OAuth refresh token (from one-time OAuth flow)
 
 ## UI conventions
 

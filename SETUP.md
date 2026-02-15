@@ -74,11 +74,38 @@ npm install
 3. Set **Application type** to **Desktop app**
 4. Name it `email-summariser`
 5. Click **Create**
-6. Click **Download JSON** on the dialog that appears
-7. Move the downloaded file to the project root and rename it:
+6. Copy the **Client ID** and **Client Secret** from the dialog — you'll need these for `.env`
+
+### 3e. Get a refresh token
+
+You need to do a one-time OAuth flow to get a refresh token. Run this in the project directory:
 
 ```bash
-mv ~/Downloads/client_secret_*.json ./credentials.json
+source venv/bin/activate
+python3 -c "
+from google_auth_oauthlib.flow import InstalledAppFlow
+import os
+
+flow = InstalledAppFlow.from_client_config(
+    {'installed': {
+        'client_id': os.environ['GOOGLE_CLIENT_ID'],
+        'client_secret': os.environ['GOOGLE_CLIENT_SECRET'],
+        'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
+        'token_uri': 'https://oauth2.googleapis.com/token',
+    }},
+    scopes=['https://www.googleapis.com/auth/gmail.readonly'],
+)
+creds = flow.run_local_server(port=0)
+print(f'GOOGLE_REFRESH_TOKEN={creds.refresh_token}')
+"
+```
+
+This opens a browser for Gmail consent. After authorizing, it prints the refresh token. Copy it into your `.env`.
+
+If you already have a `token.json` from a previous setup, you can extract the refresh token from it:
+
+```bash
+python3 -c "import json; print(json.load(open('token.json'))['refresh_token'])"
 ```
 
 ## 4. Get an OpenAI API key
@@ -110,19 +137,18 @@ Edit `.env` with your keys:
 OPENAI_API_KEY=sk-proj-abc123...
 SLACK_TOKEN=xoxc-your-slack-token
 SLACK_COOKIE=xoxd-your-slack-cookie
+GOOGLE_CLIENT_ID=189...apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=GOCSPX-...
+GOOGLE_REFRESH_TOKEN=1//0g...
 ```
 
-## 7. First run
+## 7. Test it
 
 ```bash
 python3 main.py
 ```
 
-This will:
-1. Open a browser window for Gmail OAuth consent
-2. Ask you to sign in and grant read-only access
-3. Save a `token.json` file for future runs (no browser needed again)
-4. Fetch unread emails, summarise them, and DM the summary to yourself on Slack
+This fetches unread emails, summarises them, and DMs the summary to yourself on Slack.
 
 Example output:
 
@@ -166,15 +192,11 @@ All 16 tests should pass. They use mocks so no API keys are needed.
 
 ## Troubleshooting
 
-### "credentials.json not found"
-Make sure you downloaded the OAuth client JSON from Google Cloud Console and saved it as `credentials.json` in the project root.
+### "GOOGLE_REFRESH_TOKEN" / "GOOGLE_CLIENT_ID" not set
+Make sure your `.env` has all three Google env vars set. See step 3 above.
 
 ### "Token has been expired or revoked"
-Delete `token.json` and run `python3 main.py` again to re-authenticate:
-```bash
-rm token.json
-python3 main.py
-```
+Your refresh token has been revoked. Re-run the OAuth flow from step 3e to get a new one.
 
 ### "Access blocked: This app's request is invalid" during OAuth
 You likely haven't added your email as a test user. Go to [OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent) > **Test users** and add your Gmail address.

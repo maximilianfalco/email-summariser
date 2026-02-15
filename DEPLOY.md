@@ -2,18 +2,6 @@
 
 The email summariser runs daily via GitHub Actions. The debug frontend is for local development only and is not included in deployment.
 
-## Important: OAuth token handling
-
-The Gmail API uses OAuth 2.0, which requires a one-time browser-based login. This means:
-
-1. **You must run `python3 main.py` locally first** to generate `token.json` (see [SETUP.md](SETUP.md))
-2. Upload `token.json` as a base64-encoded GitHub secret
-3. The app will automatically refresh the token on subsequent runs — no browser needed
-
-If the token expires or is revoked, you'll need to regenerate it locally and re-upload the secret.
-
----
-
 ## GitHub Actions
 
 The repo includes a workflow at `.github/workflows/daily-summary.yml` that runs the summariser daily at 11pm UTC (9am AEST). It also supports manual triggering via `workflow_dispatch`.
@@ -22,20 +10,12 @@ The repo includes a workflow at `.github/workflows/daily-summary.yml` that runs 
 
 | Secret | Description |
 |---|---|
-| `GOOGLE_CREDENTIALS` | Base64-encoded `credentials.json` |
-| `GOOGLE_TOKEN` | Base64-encoded `token.json` |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
+| `GOOGLE_REFRESH_TOKEN` | Google OAuth refresh token (see [SETUP.md](SETUP.md)) |
 | `OPENAI_API_KEY` | Your OpenAI API key |
 | `SLACK_TOKEN` | Slack session token (`xoxc-...`) |
 | `SLACK_COOKIE` | Slack session cookie (`xoxd-...`) |
-
-### Encoding your credentials
-
-```bash
-base64 -i credentials.json | pbcopy   # macOS
-base64 -w0 credentials.json           # Linux
-```
-
-Do the same for `token.json`.
 
 ### Adding secrets
 

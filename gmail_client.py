@@ -7,26 +7,22 @@ from email.message import Message
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 
 
 def get_gmail_service():
-    creds = None
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    creds = Credentials(
+        token=None,
+        refresh_token=os.environ["GOOGLE_REFRESH_TOKEN"],
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=os.environ["GOOGLE_CLIENT_ID"],
+        client_secret=os.environ["GOOGLE_CLIENT_SECRET"],
+        scopes=SCOPES,
+    )
 
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
-            creds = flow.run_local_server(port=0)
-        fd = os.open("token.json", os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-        with os.fdopen(fd, "w") as token:
-            token.write(creds.to_json())
+    creds.refresh(Request())
 
     return build("gmail", "v1", credentials=creds)
 

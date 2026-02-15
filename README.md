@@ -25,7 +25,8 @@ pip install -r requirements.txt
 
 1. Go to the [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
 2. Create an OAuth 2.0 Client ID (Desktop application)
-3. Download the JSON file and save it as `credentials.json` in the project root
+3. Note the **Client ID** and **Client Secret** — you'll add these to `.env`
+4. Complete the initial OAuth flow to get a refresh token (see [SETUP.md](SETUP.md) for detailed steps)
 
 ### 4. Environment variables
 
@@ -39,15 +40,16 @@ Fill in your keys:
 OPENAI_API_KEY=your-openai-api-key
 SLACK_TOKEN=xoxc-your-slack-token
 SLACK_COOKIE=xoxd-your-slack-cookie
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_REFRESH_TOKEN=your-refresh-token
 ```
 
-### 5. First run (authenticate Gmail)
+### 5. Test it
 
 ```bash
 python3 main.py
 ```
-
-This opens a browser for Gmail OAuth consent. After authorizing, a `token.json` is saved for subsequent headless runs.
 
 ### 6. Deploy
 

@@ -21,8 +21,7 @@ def main():
         print(f"Found {len(emails)} unread email(s). Summarising...")
         summary = summarise_emails(emails)
 
-        print("Sending summary to Slack...")
-        send_to_slack(f"*Daily Email Summary*\n\n{summary}")
+        send_to_slack(summary)
 
         print("Done.")
     except Exception as e:

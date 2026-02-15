@@ -59,7 +59,7 @@ def slack(req: SlackRequest):
     if not req.summary:
         raise HTTPException(status_code=400, detail="No summary provided")
     try:
-        send_to_slack(f"*Daily Email Summary*\n\n{req.summary}")
+        send_to_slack(req.summary)
         return {"status": "sent"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e

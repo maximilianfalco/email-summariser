@@ -87,15 +87,16 @@ mv ~/Downloads/client_secret_*.json ./credentials.json
 2. Click **Create new secret key**
 3. Copy the key (you won't be able to see it again)
 
-## 5. Set up a Slack Incoming Webhook
+## 5. Get your Slack token and cookie
 
-1. Go to [Slack API: Apps](https://api.slack.com/apps)
-2. Click **Create New App** > **From scratch**
-3. Name it `Email Summariser` and select your workspace
-4. In the sidebar, go to **Incoming Webhooks** and toggle it **On**
-5. Click **Add New Webhook to Workspace**
-6. Select the channel where you want summaries posted
-7. Copy the webhook URL (looks like `https://hooks.slack.com/services/T.../B.../xxx`)
+The app sends summaries as a DM to yourself using the Slack API. You'll need your session token and cookie from an active Slack session.
+
+1. Open Slack in your browser and sign in to your workspace
+2. Open DevTools (F12) > **Network** tab
+3. Filter for any request to `api.slack.com`
+4. From the request headers, copy:
+   - **`SLACK_TOKEN`** — the `token` parameter in the request body (starts with `xoxc-`)
+   - **`SLACK_COOKIE`** — the `d` value from the `Cookie` header (starts with `xoxd-`)
 
 ## 6. Configure environment variables
 
@@ -107,7 +108,8 @@ Edit `.env` with your keys:
 
 ```
 OPENAI_API_KEY=sk-proj-abc123...
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/T.../B.../xxx
+SLACK_TOKEN=xoxc-your-slack-token
+SLACK_COOKIE=xoxd-your-slack-cookie
 ```
 
 ## 7. First run
@@ -120,13 +122,12 @@ This will:
 1. Open a browser window for Gmail OAuth consent
 2. Ask you to sign in and grant read-only access
 3. Save a `token.json` file for future runs (no browser needed again)
-4. Fetch unread emails, summarise them, and post to Slack
+4. Fetch unread emails, summarise them, and DM the summary to yourself on Slack
 
 Example output:
 
 ```
 Found 12 unread email(s). Summarising...
-Sending summary to Slack...
 Done.
 ```
 
@@ -161,35 +162,7 @@ Or directly:
 pytest -v
 ```
 
-All 14 tests should pass. They use mocks so no API keys are needed.
-
-## 10. Set up the cron job (optional)
-
-To run automatically every day at 9:00 AM local time:
-
-```bash
-./setup_cron.sh
-```
-
-Verify it was installed:
-
-```bash
-crontab -l
-```
-
-You should see:
-
-```
-# email-summariser daily digest
-0 9 * * * cd /path/to/email-summariser && /path/to/python3 main.py >> /path/to/email-summariser/cron.log 2>&1
-```
-
-To remove the cron job later:
-
-```bash
-crontab -e
-# Delete the email-summariser lines, save, and exit
-```
+All 16 tests should pass. They use mocks so no API keys are needed.
 
 ## Troubleshooting
 
@@ -209,7 +182,4 @@ You likely haven't added your email as a test user. Go to [OAuth consent screen]
 ### "No unread emails found"
 This means you have no unread emails in your inbox. The app only fetches emails with both the `UNREAD` and `INBOX` labels.
 
-### Cron job not running
-- Make sure your machine is awake at 9 AM (cron doesn't run on sleeping machines)
-- Check `cron.log` for errors
-- On macOS, you may need to grant Terminal/cron **Full Disk Access** in System Settings > Privacy & Security
+

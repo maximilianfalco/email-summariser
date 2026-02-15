@@ -2,7 +2,7 @@
 
 ## What this project does
 
-Python app that fetches unread Gmail emails, summarises them with OpenAI (gpt-4.1-mini), and posts the summary to Slack via an Incoming Webhook. Runs daily at 9am via cron.
+Python app that fetches unread Gmail emails, summarises them with OpenAI (gpt-4.1-mini), and DMs the summary to yourself on Slack. Runs daily at 9am AEST via GitHub Actions.
 
 ## Project structure
 
@@ -11,10 +11,11 @@ Python app that fetches unread Gmail emails, summarises them with OpenAI (gpt-4.
 ├── api.py               # FastAPI debug server wrapping the same modules
 ├── gmail_client.py      # Gmail API OAuth + fetch unread emails (raw format, base64 decode)
 ├── summariser.py        # OpenAI chat completion
-├── slack_notifier.py    # Slack Incoming Webhook POST
-├── setup_cron.sh        # Installs daily 9am cron job
+├── prompts.py           # System prompt for summarisation (Slack mrkdwn formatting)
+├── slack_notifier.py    # Slack API — DMs summary to yourself via token + cookie
 ├── Makefile             # dev, api, frontend, install, test
-├── tests/               # pytest suite (14 tests, all mocked)
+├── .github/workflows/   # GitHub Actions daily schedule (11pm UTC / 9am AEST)
+├── tests/               # pytest suite (16 tests, all mocked)
 └── frontend/            # Next.js debug dashboard (port 4782)
 ```
 
@@ -45,7 +46,8 @@ make install      # venv + pip + npm install
 ## Secrets (all in .env, gitignored)
 
 - `OPENAI_API_KEY`
-- `SLACK_WEBHOOK_URL`
+- `SLACK_TOKEN` — Slack session token (`xoxc-...`)
+- `SLACK_COOKIE` — Slack session cookie (`xoxd-...`)
 - `credentials.json` — Google OAuth client (gitignored)
 - `token.json` — Google OAuth token (gitignored, 600 perms)
 

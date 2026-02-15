@@ -1,0 +1,31 @@
+name: Daily Email Summary
+
+on:
+  schedule:
+    - cron: "0 23 * * *" # 11pm UTC = 9am AEST
+  workflow_dispatch:
+
+jobs:
+  summarise:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install -r requirements.txt
+
+      - name: Write Google credentials
+        run: |
+          echo "${{ secrets.GOOGLE_CREDENTIALS }}" | base64 -d > credentials.json
+          echo "${{ secrets.GOOGLE_TOKEN }}" | base64 -d > token.json
+
+      - name: Run email summariser
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          SLACK_COOKIE: ${{ secrets.SLACK_COOKIE }}
+        run: python main.py

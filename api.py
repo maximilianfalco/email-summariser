@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer  # noqa: E402
 from pydantic import BaseModel, Field  # noqa: E402
 
-from gmail_client import fetch_unread_emails, get_gmail_service  # noqa: E402
+from gmail_client import fetch_unread_emails, get_gmail_service, mark_as_read  # noqa: E402
 from slack_notifier import send_to_slack  # noqa: E402
 from summariser import ping_ai, summarise_emails  # noqa: E402
 
@@ -61,6 +61,8 @@ def get_emails():
     try:
         service = get_gmail_service()
         emails = fetch_unread_emails(service)
+        if emails:
+            mark_as_read(service, emails)
         return {"emails": emails, "count": len(emails)}
     except Exception as e:
         logger.exception("Failed to fetch emails")

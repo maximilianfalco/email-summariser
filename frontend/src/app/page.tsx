@@ -70,6 +70,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export default function Dashboard() {
   const [mockMode, setMockMode] = useState(false);
   const [emails, setEmails] = useState<Email[]>([]);
+  const [hasFetched, setHasFetched] = useState(false);
   const [summary, setSummary] = useState("");
   const [slackStatus, setSlackStatus] = useState("");
   const [pingStatus, setPingStatus] = useState("");
@@ -96,6 +97,7 @@ export default function Dashboard() {
         const data = await res.json();
         setEmails(data.emails);
       }
+      setHasFetched(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to fetch emails");
     } finally {
@@ -193,6 +195,7 @@ export default function Dashboard() {
   function toggleMockMode() {
     setMockMode((m) => !m);
     setEmails([]);
+    setHasFetched(false);
     setSummary("");
     setSlackStatus("");
     setPingStatus("");
@@ -246,6 +249,11 @@ export default function Dashboard() {
             </span>
           )}
         </div>
+        {hasFetched && emails.length === 0 && (
+          <p className="text-sm text-gray-400">
+            No unread emails found. Your inbox is all caught up.
+          </p>
+        )}
         {emails.length > 0 && (
           <div className="space-y-3 max-h-96 overflow-y-auto">
             {emails.map((email) => (

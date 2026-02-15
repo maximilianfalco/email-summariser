@@ -106,6 +106,7 @@ def fetch_unread_emails(service, max_results: int = 20) -> list[dict]:
         emails.append(
             {
                 "id": msg_ref["id"],
+                "threadId": raw_msg.get("threadId", ""),
                 "subject": subject,
                 "from": sender,
                 "date": date,
@@ -123,3 +124,11 @@ def mark_as_read(service, emails: list[dict]) -> None:
         userId="me",
         body={"ids": msg_ids, "removeLabelIds": ["UNREAD"]},
     ).execute()
+
+    thread_ids = {e["threadId"] for e in emails if e.get("threadId")}
+    for thread_id in thread_ids:
+        service.users().threads().modify(
+            userId="me",
+            id=thread_id,
+            body={"removeLabelIds": ["UNREAD"]},
+        ).execute()

@@ -9,7 +9,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
-SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
+SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
 
 def get_gmail_service():
@@ -110,3 +110,11 @@ def fetch_unread_emails(service, max_results: int = 20) -> list[dict]:
         )
 
     return emails
+
+
+def mark_as_read(service, emails: list[dict]) -> None:
+    msg_ids = [e["id"] for e in emails]
+    service.users().messages().batchModify(
+        userId="me",
+        body={"ids": msg_ids, "removeLabelIds": ["UNREAD"]},
+    ).execute()

@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from gmail_client import fetch_unread_emails, get_gmail_service
+from gmail_client import fetch_unread_emails, get_gmail_service, mark_as_read
 from slack_notifier import send_to_slack
 from summariser import summarise_emails
 
@@ -22,6 +22,7 @@ def main():
         summary = summarise_emails(emails)
 
         send_to_slack(summary)
+        mark_as_read(service, emails)
 
         print("Done.")
     except Exception as e:

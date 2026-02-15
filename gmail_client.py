@@ -5,9 +5,13 @@ from email import message_from_bytes
 from email.header import decode_header
 from email.message import Message
 
+import google_auth_httplib2
+import httplib2
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
+
+API_TIMEOUT = 30
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
@@ -24,7 +28,8 @@ def get_gmail_service():
 
     creds.refresh(Request())
 
-    return build("gmail", "v1", credentials=creds)
+    http = google_auth_httplib2.AuthorizedHttp(creds, http=httplib2.Http(timeout=API_TIMEOUT))
+    return build("gmail", "v1", http=http)
 
 
 def _decode_header_value(value: str) -> str:

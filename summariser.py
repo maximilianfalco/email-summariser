@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from openai import OpenAI
 
@@ -19,7 +19,8 @@ def ping_ai() -> str:
 def summarise_emails(emails: list[dict]) -> str:
     client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
-    today = datetime.now(timezone.utc).strftime("%b %d, %Y")
+    aest = timezone(timedelta(hours=10))
+    today = datetime.now(aest).strftime("%b %d, %Y")
     email_text = f"Today's date: {today}\n\n"
     for i, e in enumerate(emails, 1):
         email_text += (

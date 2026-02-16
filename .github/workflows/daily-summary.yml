@@ -2,7 +2,7 @@ name: Daily Email Summary
 
 on:
   schedule:
-    - cron: "0 23 * * *" # 11pm UTC = 9am AEST
+    - cron: "0 22 * * *" # 10pm UTC = 8am AEST (buffer for GH Actions delay)
   workflow_dispatch:
 
 jobs:

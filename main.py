@@ -15,7 +15,8 @@ def main():
         emails = fetch_unread_emails(service)
 
         if not emails:
-            print("No unread emails found.")
+            send_to_slack("Inbox is clear!")
+            print("No unread emails found. Sent 'Inbox is clear!' to Slack.")
             return
 
         print(f"Found {len(emails)} unread email(s). Summarising...")

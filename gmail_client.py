@@ -61,14 +61,14 @@ def _extract_body(mime_msg: Message) -> str:
 
 
 def fetch_unread_emails(service, max_results: int = 20) -> list[dict]:
-    twelve_hours_ago = int(time.time()) - (12 * 60 * 60)
+    twenty_four_hours_ago = int(time.time()) - (24 * 60 * 60)
     response = (
         service.users()
         .messages()
         .list(
             userId="me",
             labelIds=["UNREAD", "INBOX"],
-            q=f"category:primary after:{twelve_hours_ago}",
+            q=f"category:primary after:{twenty_four_hours_ago}",
             maxResults=max_results,
         )
         .execute()

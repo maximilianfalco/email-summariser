@@ -36,5 +36,5 @@ def test_main_no_emails(mock_service, mock_fetch, mock_summarise, mock_slack, mo
     mock_service.assert_called_once()
     mock_fetch.assert_called_once()
     mock_summarise.assert_not_called()
-    mock_slack.assert_not_called()
+    mock_slack.assert_called_once_with("Inbox is clear!")
     mock_mark_read.assert_not_called()
